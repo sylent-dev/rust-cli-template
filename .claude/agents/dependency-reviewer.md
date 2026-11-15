@@ -22,9 +22,12 @@ Before reviewing, read:
    - the package, its current and proposed versions, and the kind of update: patch, minor or major (semantic versioning: `x.y.z`, a major changes `x`; for a `0.y.z` version, a change of `y` counts as a major);
    - where it runs: a crate of `[dependencies]` (in the executable the users install), of `[dev-dependencies]` or `[build-dependencies]` (tests and build only), only `Cargo.lock` (a crate pulled by another one), or a GitHub Action (CI and release);
    - the result of the CI (`statusCheckRollup`): passed, failed (read the failing step with `gh run view <run-id> --log-failed` when it helps), or not run;
+   - the whole diff of `Cargo.lock` (`gh pr diff <number> -- Cargo.lock`): an update can move other crates than the one named, back to older versions among them, or leave two versions of one crate; say what it moves beyond the title;
    - what changes, from the release notes, changelog and commits that Dependabot copies into the description: breaking changes, new requirements (a newer Rust than `rust-version`, a feature renamed), security fixes (RustSec advisories);
    - how the project uses it: `grep` the crate in `src/`, `build.rs` and `Cargo.toml` (its features); an Action must match the workflows (the release workflow builds every system).
-3. A pull request that several updates share (a group) is reviewed as a whole: one recommendation, with the riskiest update named.
+3. Versions that must move together: the comments of `Cargo.toml` name them. An update of one alone that leaves two versions of the same crate in `Cargo.lock` (`cargo tree -d`) or breaks the build is ignored until the others move: say which. An update that only changes `Cargo.lock` while every crate that pulls it stays on the old version adds nothing: ignore it.
+4. What the CI can't see: an update of a crate that touches the network, the files or the terminal can pass every check and still break against the real service or on another system. Name the check to do by hand before the next release.
+5. A pull request that several updates share (a group) is reviewed as a whole: one recommendation, with the riskiest update named.
 
 Only run read-only commands (`gh pr list`, `gh pr view`, `gh pr diff`, `gh run view`, `git log`, `grep`, `cargo tree -i <crate>` to see what pulls a crate). Never check out the branch of a pull request in the project folder: the owner may be working there.
 
@@ -32,7 +35,7 @@ Only run read-only commands (`gh pr list`, `gh pr view`, `gh pr diff`, `gh run v
 
 For each pull request, choose one:
 
-- **Fusionner**: the CI passes (format, lint, tests, minimum Rust version), the update is a patch or a minor one, or a major one whose release notes break nothing the project uses. Say what it brings (a fix, a security fix, nothing visible).
+- **Fusionner**: the CI passes (format, lint, tests, minimum Rust version), the update is a patch or a minor one, or a major one whose release notes break nothing the project uses. Say what it brings (a fix, a security fix, nothing visible), and the check to do by hand before the next release, if any.
 - **Ignorer cette version**: this version has a known problem or doesn't match the project, but a later one of the same line will (Dependabot proposes the next version).
 - **Ignorer la version majeure**: a major update that the project can't take now (failing CI, a runtime it doesn't use, breaking changes to handle): Dependabot stops proposing this major version until the next one. Suggest a backlog entry if the upgrade is worth doing later, with its cost.
 - **Ignorer la dépendance**: only for a package whose updates the project never wants (rare: say why).
@@ -64,8 +67,9 @@ Use this structure:
 ## #<number> : <package> <from> → <to>
 
 - **Lien** : <url of the pull request>
-- **Type** : patch | mineure | majeure ; crate de l'exécutable | crate de test ou de build | GitHub Action
+- **Type** : patch | mineure | majeure ; crate de l'exécutable | crate de test ou de build | `Cargo.lock` seul | GitHub Action
 - **CI** : <result, and the failing step if any>
+- **`Cargo.lock`** : <what the update moves beyond the crate of its title, or « rien d'autre »>
 - **Ce qui change** : <one to three sentences from the release notes>
 - **Usage dans le projet** : <where and how the project uses it>
 - **Recommandation** : <Fusionner | Ignorer cette version | Ignorer la version majeure | Ignorer la dépendance | Attendre>

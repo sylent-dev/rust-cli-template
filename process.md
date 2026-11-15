@@ -224,14 +224,17 @@ What the tests cover, at least:
 
 1. Executable name, application icon, README (how to install, usage, help per system, services called and their risks).
 2. Choose the version ([Semantic Versioning](https://semver.org/)): **patch** for fixes only; **minor** for a new command, option or field that changes nothing existing; **major** (or minor before 1.0) for a breaking change: an option removed or renamed, an exit code or a JSON field changed, a configuration file that must be migrated. The `!` commits of the cycle (Conventional Commits) point to the breaking changes.
-3. Check the dependencies: the Dependabot pull requests reviewed (`dependency-reviewer`), and no known vulnerability (`cargo audit`, installed once with `cargo install cargo-audit`).
-4. Check the addresses the executable is built with (an update check, a link to the issues): `gh repo view --json nameWithOwner` gives the owner and the name of the repository of today, and a search of the code and the docs (`git grep -n '<owner>/'`) finds a link left on an old name. GitHub redirects a renamed account or repository, but an executable keeps the addresses it was built with, and the redirects stop as soon as someone claims the old name.
-5. Version in `Cargo.toml`, tag `vX.Y.Z` on the merged commit: the release workflow builds the archives, `SHA256SUMS.txt` and the release notes, generated from the pull requests of the cycle.
-6. Reread the release notes on GitHub: a short summary at the top for the users, and the breaking changes, with what to do, first.
-7. Download one archive from the release, check it against `SHA256SUMS.txt`, and run `--version` and `--help` on each system the owner has: the release is what the users get, not the build of the owner's machine.
-8. Commitments to third parties (e.g. tell a data provider once the releases reach a number of downloads).
+3. Before the first release, a **quality review of the whole repository, area by area** (a step of `roadmap.md`): `code-reviewer` in its area mode, one pass per area at once, each told what the others read and given the results of Clippy and of the tests run once before them, against SOLID, DRY and KISS, a design pattern only where it removes a real difficulty. Its findings are split into pull requests: the fixes of behavior first, then the tests, then what needs a mock-up, the moves last. On rust-exile-market it found what the reviews of the branches couldn't (a rule that held on one path of three, tests that no longer tested what their name said) and was worth four pull requests; after the first release, one at each large step rather than one at the end.
+4. The security audit (`security-auditor`) of the whole repository at `main`, or, before a patch release and on the owner's word, of the changes since the last audited version: a critical or high finding blocks the tag. The Dependabot pull requests reviewed (`dependency-reviewer`), and no known vulnerability (`cargo audit`, installed once with `cargo install cargo-audit`).
+5. Check the addresses the executable is built with (an update check, a link to the issues): `gh repo view --json nameWithOwner` gives the owner and the name of the repository of today, and a search of the code and the docs (`git grep -n '<owner>/'`) finds a link left on an old name. GitHub redirects a renamed account or repository, but an executable keeps the addresses it was built with, and the redirects stop as soon as someone claims the old name.
+6. Version in `Cargo.toml`, tag `vX.Y.Z` on the merged commit: the release workflow builds the archives, `SHA256SUMS.txt` and the release notes, generated from the pull requests of the cycle.
+7. Reread the release notes on GitHub: a short summary at the top for the users, and the breaking changes, with what to do, first.
+8. Download one archive from the release, check it against `SHA256SUMS.txt`, and run `--version` and `--help` on each system the owner has: the release is what the users get, not the build of the owner's machine.
+9. Commitments to third parties (e.g. tell a data provider once the releases reach a number of downloads).
 
 A release that went wrong is not deleted once someone may have downloaded it: the fix comes as the next patch version.
+
+After the first release, the roadmap of the template brings a **donation method** if the owner wants one: a link in the README, on the site, and a discreet one in the help of the application. Before opening a new donation page, check what the payment service shows the donors: on Ko-fi, a personal PayPal account shows the owner's legal name and email, while Stripe alone shows the public name chosen. One page per application, so that each page tells what its application brings.
 
 ## Retrospective
 

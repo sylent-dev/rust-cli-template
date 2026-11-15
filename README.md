@@ -11,9 +11,11 @@ Template for Rust command-line applications, with the project conventions, the p
 | `process.md`, `docs/process.svg`, `docs/process-light.svg` | How an application goes from an idea to a release and keeps growing: a toolbox (specifications, structure, wireframes, mock-up and design system for a terminal interface, build, release, retrospective) picked for each change, a backlog and a roadmap, the urgent fixes and the explorations, with its diagram, dark and light (the README and `process.md` show the light one). |
 | `design-journal.md` | The design experiences of past applications: choices kept and rejected, and why. A source of ideas, not rules. |
 | `CLAUDE.md` | Rules for Claude Code: communication, naming, language, specifications and roadmap, process, lessons, Git workflow, commit messages, code review, checks, releases. |
-| `.claude/agents/code-reviewer.md` | Subagent that reviews a branch before its pull request and writes its notes, in French, to `outputs/`. |
+| `.claude/agents/code-reviewer.md` | Subagent that reviews a branch before its pull request, or the whole repository area by area before the first release, and writes its notes, in French, to `outputs/`. |
+| `.claude/agents/security-auditor.md` | Subagent that audits the security of the whole repository before each release, and writes its findings, in French, to `outputs/`. |
 | `.claude/agents/dependency-reviewer.md` | Subagent that reviews the open Dependabot pull requests and tells, in French, which to merge or set aside, with their links and the comments to post. |
 | `.claude/skills/excalidraw-wireframes/` | Skill: editable Excalidraw wireframes of a terminal interface, and sketches of a structure (the commands and their options), iterated with the owner (Python helpers and an SVG preview). |
+| `.claude/skills/tidy-io-folders/` | Skill: `inputs/` and `outputs/` tidied at the end of a numbered step, on the owner's word. |
 | `.claude/skills/html-mockups/` | Skill: the HTML mock-up built from the wireframe, styles and open decisions compared with tabs, then the design tokens (starting page, server without cache, headless screenshots). |
 | `specs.md` | Skeleton of the specifications: what the application does. |
 | `roadmap.md`, `backlog.md` | Skeletons of the roadmap (the size of the project and the steps chosen, one pull request per step, kept short since it is read at every session) and of the backlog (polish, edge cases, features, large works, waiting on others). |

@@ -10,7 +10,7 @@ Template for Rust command-line applications, with the project conventions, the p
 |---|---|
 | `process.md`, `docs/process.svg`, `docs/process-light.svg` | How an application goes from an idea to a release and keeps growing: a toolbox (specifications, structure, wireframes, mock-up and design system for a terminal interface, build, release, retrospective) picked for each change, a backlog and a roadmap, the urgent fixes and the explorations, with its diagram, dark and light (the README and `process.md` show the light one). |
 | `design-journal.md` | The design experiences of past applications: choices kept and rejected, and why. A source of ideas, not rules. |
-| `CLAUDE.md` | Rules for Claude Code: communication, naming, language, specifications and roadmap, Git workflow, commit messages, code review, checks, releases. |
+| `CLAUDE.md` | Rules for Claude Code: communication, naming, language, specifications and roadmap, process, lessons, Git workflow, commit messages, code review, checks, releases. |
 | `.claude/agents/code-reviewer.md` | Subagent that reviews a branch before its pull request and writes its notes, in French, to `outputs/`. |
 | `.claude/agents/dependency-reviewer.md` | Subagent that reviews the open Dependabot pull requests and tells, in French, which to merge or set aside, with their links and the comments to post. |
 | `.claude/skills/excalidraw-wireframes/` | Skill: editable Excalidraw wireframes of a terminal interface, and sketches of a structure (the commands and their options), iterated with the owner (Python helpers and an SVG preview). |
@@ -18,6 +18,8 @@ Template for Rust command-line applications, with the project conventions, the p
 | `specs.md` | Skeleton of the specifications: what the application does. |
 | `roadmap.md`, `backlog.md` | Skeletons of the roadmap (the size of the project and the steps chosen, one pull request per step, kept short since it is read at every session) and of the backlog (polish, edge cases, features, large works, waiting on others). |
 | `docs/technical-choices.md` | The technical choices and their reasons. |
+| `docs/code-quality.md` | The rules of the code (names, functions, types, threads, systems, tests, refactoring), read at the start of each step that changes code and applied by `code-reviewer`. |
+| `docs/lessons.md` | The lessons kept for the retrospectives. |
 | `.claude/settings.json` | Project settings of Claude Code: the claude.ai connectors turned off and the unused skills hidden from the model, to save tokens. |
 | `Cargo.toml` | Package, `unsafe` code forbidden, Clippy pedantic lints, optimized release profile. |
 | `rust-toolchain.toml` | Stable toolchain with `rustfmt` and Clippy. |
@@ -37,7 +39,7 @@ Template for Rust command-line applications, with the project conventions, the p
 
 2. In `Cargo.toml`, update `name`, `description` and `repository` (add `keywords` and `categories` if the crate is published), then run `cargo build` to update `Cargo.lock`.
 3. Adapt this README to the project: keep the Requirements, Build, Development, Release and License sections, replace the others.
-4. Check the license: keep `MIT OR Apache-2.0`, or change `license` in `Cargo.toml` and the `LICENSE-*` files (they are also copied into the release archives by `.github/workflows/release.yml`).
+4. Choose the license with the owner before any code is published (process.md, Start a project): keep `MIT OR Apache-2.0`, or change `license` in `Cargo.toml` and the `LICENSE-*` files (they are also copied into the release archives by `.github/workflows/release.yml`).
 5. On GitHub, protect `main` (**Settings › Rules › Rulesets**): require a pull request and the `Format, lint and test` and `Minimum Rust version` checks. On a free account, rulesets only apply to public repositories.
 6. Set the pull request settings, which are not copied from the template: allow only squash merging, and delete the branches once merged (**Settings › General › Pull Requests**), or:
 

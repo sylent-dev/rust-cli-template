@@ -81,17 +81,18 @@ Each tool has a **done when**: a list of facts anyone can check, not an impressi
 | [Design system](#design-system) | At the end of a mock-up, a new token | Design section of `specs.md` | Every color, width and symbol of the mock-up is a named token, with its fallback without colors and without Unicode; the mock-up uses only these tokens. |
 | [Build](#build) | Always | One pull request per step | The checks and the CI are green; the acceptance examples of the step pass as tests; the review notes the owner chose are applied; `specs.md` matches the behavior; the owner has tried it (on every target system for a step that touches the system); the step's box of `roadmap.md` is checked and the pull request merged. |
 | [Release](#release) | The end of a cycle, a patch of fixes | Version tag, GitHub release | The version follows the rules of [Release](#release); the archives and `SHA256SUMS.txt` are published; one archive downloaded from the release runs (`--version`, `--help`) on each system the owner has; the README explains how to install and use it. |
-| [Retrospective](#retrospective) | The end of a cycle, or a tool that went badly | Changes to this file, the templates and the backlog | The success criteria of the version are checked one by one; the planned and actual pull requests are compared; the backlog is sorted; each lesson is written where it applies (this file, `CLAUDE.md`, the templates). |
+| [Retrospective](#retrospective) | The end of a cycle, or a tool that went badly | Changes to this file, the templates and the backlog | The success criteria of the version are checked one by one; the planned and actual pull requests are compared; the backlog is sorted; each lesson of `docs/lessons.md` is sorted where it applies (this file, `CLAUDE.md`, the skills, the agents, the templates) or dropped. |
 
 ## Start a project
 
 1. Create the repository from [rust-cli-template](https://github.com/sylent-dev/rust-cli-template) (see the README, **Start a new project**).
 2. Apply the pull request settings: squash merging only, branches deleted once merged.
 3. Protect `main` with a ruleset. On a free GitHub account, rulesets only apply to **public** repositories: make the repository public, or keep it private and accept that `main` is not protected.
-4. Size the project with the owner ([Size the project](#size-the-project)), and write the tools kept at the top of `roadmap.md`, with the steps of the first cycle.
-5. First pull request: rename the package (`Cargo.toml`, `Cargo.lock`), adapt the README, check the license, choose a port of its own for the mock-up server if the tool has a terminal interface (`docs/technical-choices.md`).
-6. Open Claude Code in the project folder. Its memory is stored per project: a new session doesn't remember a conversation held in another project. To carry context over, paste a summary of it.
-7. Check the connectors: the template turns off the claude.ai connectors (`disableClaudeAiConnectors` in `.claude/settings.json`), whose instructions and tools would be sent with every message. If the project needs one (Claude Docs, Gmail…), remove the setting; `/mcp` lists the servers that are on, and `/context` what fills the context. In the same file, `skillOverrides` hides from the model the skills the project doesn't use (still available with `/<name>`): adjust the list to the project, or use `/skills`.
+4. **Choose the license with the owner**, before any code is published: the template writes `MIT OR Apache-2.0`, the default of the Rust ecosystem, which lets anyone ship a closed fork; the GPL 3.0 makes a published fork give its code back. On rust-exile-market, the default stayed until the owner chose the GPL just before the first release: the code published meanwhile stays under the first license.
+5. Size the project with the owner ([Size the project](#size-the-project)), and write the tools kept at the top of `roadmap.md`, with the steps of the first cycle.
+6. First pull request: rename the package (`Cargo.toml`, `Cargo.lock`), adapt the README, apply the license, choose a port of its own for the mock-up server if the tool has a terminal interface (`docs/technical-choices.md`).
+7. Open Claude Code in the project folder. Its memory is stored per project: a new session doesn't remember a conversation held in another project. To carry context over, paste a summary of it.
+8. Check the connectors: the template turns off the claude.ai connectors (`disableClaudeAiConnectors` in `.claude/settings.json`), whose instructions and tools would be sent with every message. If the project needs one (Claude Docs, Gmail…), remove the setting; `/mcp` lists the servers that are on, and `/context` what fills the context. In the same file, `skillOverrides` hides from the model the skills the project doesn't use (still available with `/<name>`): adjust the list to the project, or use `/skills`.
 
 ## Specifications
 
@@ -224,22 +225,24 @@ What the tests cover, at least:
 1. Executable name, application icon, README (how to install, usage, help per system, services called and their risks).
 2. Choose the version ([Semantic Versioning](https://semver.org/)): **patch** for fixes only; **minor** for a new command, option or field that changes nothing existing; **major** (or minor before 1.0) for a breaking change: an option removed or renamed, an exit code or a JSON field changed, a configuration file that must be migrated. The `!` commits of the cycle (Conventional Commits) point to the breaking changes.
 3. Check the dependencies: the Dependabot pull requests reviewed (`dependency-reviewer`), and no known vulnerability (`cargo audit`, installed once with `cargo install cargo-audit`).
-4. Version in `Cargo.toml`, tag `vX.Y.Z` on the merged commit: the release workflow builds the archives, `SHA256SUMS.txt` and the release notes, generated from the pull requests of the cycle.
-5. Reread the release notes on GitHub: a short summary at the top for the users, and the breaking changes, with what to do, first.
-6. Download one archive from the release, check it against `SHA256SUMS.txt`, and run `--version` and `--help` on each system the owner has: the release is what the users get, not the build of the owner's machine.
-7. Commitments to third parties (e.g. tell a data provider once the releases reach a number of downloads).
+4. Check the addresses the executable is built with (an update check, a link to the issues): `gh repo view --json nameWithOwner` gives the owner and the name of the repository of today, and a search of the code and the docs (`git grep -n '<owner>/'`) finds a link left on an old name. GitHub redirects a renamed account or repository, but an executable keeps the addresses it was built with, and the redirects stop as soon as someone claims the old name.
+5. Version in `Cargo.toml`, tag `vX.Y.Z` on the merged commit: the release workflow builds the archives, `SHA256SUMS.txt` and the release notes, generated from the pull requests of the cycle.
+6. Reread the release notes on GitHub: a short summary at the top for the users, and the breaking changes, with what to do, first.
+7. Download one archive from the release, check it against `SHA256SUMS.txt`, and run `--version` and `--help` on each system the owner has: the release is what the users get, not the build of the owner's machine.
+8. Commitments to third parties (e.g. tell a data provider once the releases reach a number of downloads).
 
 A release that went wrong is not deleted once someone may have downloaded it: the fix comes as the next patch version.
 
 ## Retrospective
 
-At the end of each cycle (the first one ends with the first release), or after any tool that went badly:
+Often, like the refactoring, rather than one big one at the end: the first right after the first release, while the lessons are fresh and the users' reports take time to come; the next after the polish that follows, with those reports; then at the end of each cycle, or after any tool that went badly:
 
 1. Check the success criteria of the version, one by one: met, not met (and why), or not measurable yet (and when it will be). A criterion not met becomes a backlog entry, or is dropped on purpose.
 2. Compare the pull requests expected for each step with those it took: what took longer than expected? What had to be redone? What did the owner like most?
-3. Sort the backlog: the leftovers and the ideas of the cycle go in, what is done or no longer wanted goes out.
-4. Read Claude Code's memory of the project: a rule or a preference that holds for the whole project moves to `CLAUDE.md` or this file, where the next sessions and the templates find it.
-5. Update this file, and the template (`CLAUDE.md`, `README.md`, the skills) when the lesson applies to every project, and the web template when it applies to it too: a lesson about the process goes to [Lessons learned](#lessons-learned), a trap of a tool or of the environment to [Known pitfalls](#known-pitfalls).
+3. Sort the lessons of `docs/lessons.md` one by one with the owner, by batches of about fifteen, the decision written on each line: into this file, `CLAUDE.md`, a skill or an agent of this project, into the templates (this one, and the others when the lesson holds for them too), or dropped.
+4. Sort the backlog: the leftovers and the ideas of the cycle go in, what is done or no longer wanted goes out.
+5. Read Claude Code's memory of the project: a rule or a preference that holds for the whole project moves to `CLAUDE.md` or this file, where the next sessions and the templates find it.
+6. Update this file, and the template (`CLAUDE.md`, `README.md`, the skills) when the lesson applies to every project, and the other templates when it applies to them too: a lesson about the process goes to [Lessons learned](#lessons-learned), a trap of a tool or of the environment to [Known pitfalls](#known-pitfalls).
 
 ## Lessons learned
 

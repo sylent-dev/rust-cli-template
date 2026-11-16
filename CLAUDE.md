@@ -127,7 +127,7 @@ Follow [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.
 
 ## Code review
 
-- Before opening any pull request that changes code or its build (`src/`, tests, `Cargo.toml`, `build.rs`, `rust-toolchain.toml`, `.github/workflows/`), run the `code-reviewer` subagent (`.claude/agents/code-reviewer.md`) on the branch.
+- Before opening any pull request that changes code or its build (`src/`, tests, `Cargo.toml`, `clippy.toml`, `deny.toml`, `about.toml`, `about.hbs`, `build.rs`, `rust-toolchain.toml`, `.github/workflows/`, `.github/scripts/`), run the `code-reviewer` subagent (`.claude/agents/code-reviewer.md`) on the branch.
 - It writes its recommendations, in French, to `outputs/<YYYY-MM-DD>-<branch>-code-review.md`. These notes are ignored by Git.
 - Summarize the recommendations to the owner as one numbered plan, the recommendation first (Communication), apply only the ones they approve, then open the pull request: never before the owner has chosen.
 - A pull request that changes only the version in `Cargo.toml` and `Cargo.lock` (with its release notes, if any) needs no code review.
@@ -140,8 +140,8 @@ Follow [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.
 
 - Before committing, run and make sure all of these pass:
   - `cargo fmt --all --check`
-  - `cargo clippy --all-targets --all-features -- -D warnings`
-  - `cargo test --all-features`
+  - `cargo clippy --workspace --all-targets --all-features -- -D warnings`
+  - `cargo test --workspace --all-features`
 - Run the checks with their exit codes written out (`cargo clippy …; echo CLIPPY=$?`), never piped into `| tail` inside an `&&` chain: the pipe hides a failure.
 - The same checks run in CI (`.github/workflows/ci.yml`) on every pull request, skipped when it only changes Markdown files and `docs/` (the jobs, required on `main`, then succeed at once). Never remove a failing CI job before reading its log: it may be the only check of its system.
 - The rules of the code are in `docs/code-quality.md`: read it at the start of each step that changes code. Keep the code clean at every change, without waiting to be asked: before each commit, reread the functions the change touches as a whole and refactor them (remove what became dead or redundant, rename what no longer says what it does, keep each rule in one place, never set a value that is always overwritten), most of all after the fixes of a code review, which pile up; say in the summary what was refactored.

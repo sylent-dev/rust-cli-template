@@ -3,11 +3,14 @@ name = "rust-project-template"
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.93"
-description = "Template for Rust applications (command-line, desktop or web)."
+description = "Template for Rust command-line applications."
 authors = ["Aunim HASSAN"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/sylent-dev/rust-cli-template"
 readme = "README.md"
+# An application, not a library: its own crate isn't listed among the licenses of the
+# dependencies (deny.toml, about.toml). Remove it if the crate is published on crates.io.
+publish = false
 
 [dependencies]
 

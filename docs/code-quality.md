@@ -78,7 +78,7 @@ The name comes first: a reader who sees only the name should know what the thing
 ## Errors
 
 - A `Result` carries its context: what was being done, on what.
-- No `unwrap` outside the tests (Clippy `unwrap_used`); an `expect` only for an invariant, which its message states.
+- No `unwrap` outside the tests (Clippy `unwrap_used`); an `expect` only for an invariant, which its message states. Clippy allows it only in the `#[test]` functions and the `#[cfg(test)]` modules: a helper of the integration tests (`tests/`) uses `expect`, or the file starts with `#![allow(clippy::unwrap_used)]`.
 - An error is caught where its information still is (the status and the message of a response), not flattened into one variant.
 - The world is expected to be wrong at times (a file, an input, the network): it is handled gently. A broken invariant is a bug: it shows.
 

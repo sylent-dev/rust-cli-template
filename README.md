@@ -41,7 +41,7 @@ Template for Rust command-line applications, with the project conventions, the p
    gh repo create <name> --template sylent-dev/rust-cli-template --private --clone
    ```
 
-2. In `Cargo.toml`, update `name`, `description` and `repository` (add `keywords` and `categories` if the crate is published), then run `cargo build` to update `Cargo.lock`.
+2. In `Cargo.toml`, update `name`, `description` and `repository` (if the crate is published on crates.io, remove `publish = false` and add `keywords` and `categories`), then run `cargo build` to update `Cargo.lock`.
 3. Adapt this README to the project: keep the Requirements, Build, Development, Release and License sections, replace the others.
 4. Choose the license with the owner before any code is published (process.md, Start a project): keep `MIT OR Apache-2.0`, or change `license` in `Cargo.toml` and the `LICENSE-*` files (they are also copied into the release archives by `.github/workflows/release.yml`).
 5. On GitHub, protect `main` (**Settings › Rules › Rulesets**): require a pull request and the `Format, lint and test` and `Minimum Rust version` checks; protect the tags `v*` from being moved or deleted (docs/releases.md). On a free account, rulesets only apply to public repositories.
@@ -67,8 +67,8 @@ cargo build --release
 
 ```sh
 cargo fmt --all
-cargo clippy --all-targets --all-features -- -D warnings
-cargo test --all-features
+cargo clippy --workspace --all-targets --all-features -- -D warnings
+cargo test --workspace --all-features
 ```
 
 ## Release
@@ -81,7 +81,7 @@ git tag v0.1.0
 git push origin v0.1.0
 ```
 
-The [Release workflow](.github/workflows/release.yml) builds the archives for Windows, macOS and Linux and publishes them as a GitHub release. It fails if the tag does not match the version of `Cargo.toml`, if the notes are missing, if the tagged commit isn't on `main`, or if a dependency has a security advisory not sorted yet.
+The [Release workflow](.github/workflows/release.yml) builds the archives for Windows, macOS and Linux and publishes them as a GitHub release. It fails if the tag does not match the version of `Cargo.toml`, if the notes are missing, if the tagged commit isn't on `main`, or if a dependency has a security advisory not sorted yet or a license not accepted (`deny.toml`).
 
 ## License
 

@@ -30,7 +30,7 @@ Each archive keeps its name from one version to the next (`<executable>-windows-
 
 A file the executable embeds under another license (a font, icons) adds its notice to the `Package` step of the workflow, and to its `paths`, so that a rename fails on the pull request rather than at the tag.
 
-The Linux executable is linked statically against musl: it runs on any distribution, without the libraries of the system.
+The Linux executable is linked statically against musl: it runs on any distribution, without the libraries of the system. OpenSSL doesn't build for musl on the runner: a dependency that offers it (an HTTP client) is built with its `rustls` feature instead.
 
 ## The licenses of the dependencies
 

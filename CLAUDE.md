@@ -127,7 +127,7 @@ Follow [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.
 
 ## Code review
 
-- Before opening any pull request that changes code or its build (`src/`, tests, `Cargo.toml`, `build.rs`, `rust-toolchain.toml`, `.github/workflows/`), run the `code-reviewer` subagent (`.claude/agents/code-reviewer.md`) on the branch.
+- Before opening any pull request that changes code or its build (`src/`, tests, `Cargo.toml`, `clippy.toml`, `deny.toml`, `about.toml`, `about.hbs`, `build.rs`, `rust-toolchain.toml`, `.github/workflows/`, `.github/scripts/`), run the `code-reviewer` subagent (`.claude/agents/code-reviewer.md`) on the branch.
 - It writes its recommendations, in French, to `outputs/<YYYY-MM-DD>-<branch>-code-review.md`. These notes are ignored by Git.
 - Summarize the recommendations to the owner as one numbered plan, the recommendation first (Communication), apply only the ones they approve, then open the pull request: never before the owner has chosen.
 - A pull request that changes only the version in `Cargo.toml` and `Cargo.lock` (with its release notes, if any) needs no code review.
@@ -140,20 +140,21 @@ Follow [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.
 
 - Before committing, run and make sure all of these pass:
   - `cargo fmt --all --check`
-  - `cargo clippy --all-targets --all-features -- -D warnings`
-  - `cargo test --all-features`
+  - `cargo clippy --workspace --all-targets --all-features -- -D warnings`
+  - `cargo test --workspace --all-features`
 - Run the checks with their exit codes written out (`cargo clippy …; echo CLIPPY=$?`), never piped into `| tail` inside an `&&` chain: the pipe hides a failure.
-- The same checks run in CI (`.github/workflows/ci.yml`) on every pull request. Never remove a failing CI job before reading its log: it may be the only check of its system.
+- The same checks run in CI (`.github/workflows/ci.yml`) on every pull request, skipped when it only changes Markdown files and `docs/` (the jobs, required on `main`, then succeed at once). Never remove a failing CI job before reading its log: it may be the only check of its system.
 - The rules of the code are in `docs/code-quality.md`: read it at the start of each step that changes code. Keep the code clean at every change, without waiting to be asked: before each commit, reread the functions the change touches as a whole and refactor them (remove what became dead or redundant, rename what no longer says what it does, keep each rule in one place, never set a value that is always overwritten), most of all after the fixes of a code review, which pile up; say in the summary what was refactored.
 - When a bug reaches the owner that a test or a check could have caught, add it in the same pull request as the fix.
 - Every acceptance example of `specs.md` (a command line, its output and its exit code) that a step touches becomes an integration test that runs the executable, in the same pull request; a step is done only when the facts of its **done when** in `process.md` (The tools) hold.
 - When Claude Code runs in an editor installed as a Flatpak (no access to the owner's desktop: X11, other applications), a check that must run on the desktop (a probe of the windows, of the keyboard or of the pointer) is built in the scratchpad, copied to `~/.cache/<probe>/`, and run with `flatpak-spawn --host <path of the probe>`, outside the sandbox of Claude Code. Ask the owner to allow only that command in `.claude/settings.local.json` (`"Bash(flatpak-spawn --host <path of the probe>:*)"`, never committed), rather than giving the editor access to X11 for good. Warn the owner before each run, and say what they must do in the meantime.
-- `unsafe` code is forbidden and Clippy pedantic lints are enabled (see `[lints]` in `Cargo.toml`).
+- `unsafe` code is forbidden, Clippy pedantic lints are enabled and `unwrap` is refused outside the tests (see `[lints]` in `Cargo.toml` and `clippy.toml`).
 - `rust-version` in `Cargo.toml` is the minimum Rust version: CI also builds with it. Raise it when a dependency or a language feature needs a newer Rust.
 - Once the tests of a module run past a few hundred lines, move them to a file of their own, `<module>/tests.rs` (`src/session.rs` ends with `#[cfg(test)] mod tests;`, its tests in `src/session/tests.rs`), so that reading the code doesn't read its tests too; as a child module, they still reach its private items (`use super::*;`). The paths of `include_str!` are then one `../` deeper.
 
 ## Releases
 
 - Pushing a version tag (e.g. `v0.1.0`) that matches the version of `Cargo.toml` publishes a GitHub release with the executables for Windows, macOS and Linux (`.github/workflows/release.yml`).
+- Follow `docs/releases.md`: the notes of the version in `docs/release-notes/`, a build by hand of every system before the tag, and what an archive holds.
 - Before every release, run the `security-auditor` subagent (`.claude/agents/security-auditor.md`) on the whole repository at `main`: it writes its findings, in French, to `outputs/<YYYY-MM-DD>-security-audit.md`. Summarize them to the owner, and fix the ones they approve in a pull request before the tag; a critical or high finding blocks the tag. Before a patch release, the owner may limit the audit to the changes since the last audited version.
 - The template is made for command-line and terminal applications, which this workflow suits: an archive per system with the executable.

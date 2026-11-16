@@ -25,7 +25,7 @@ The name comes first: a reader who sees only the name should know what the thing
 
 - One function does one thing, at one level of detail, and reads from top to bottom. Past about 50 lines or three levels of nesting, look for the part that deserves a name.
 - The case that stops returns early (`let … else`, `?`), so the main path isn't nested.
-- At most four parameters, `self` included.
+- At most four parameters, `self` included: Clippy counts them (`clippy.toml`).
 - Two parameters of the same type side by side become a struct or an enum when a call can swap them unseen: literals (`f(true, false)`, `f(3, 7)`), or values without a name of their own at the call. Two values named at the call (`english`, `french`) may stay.
 - No boolean parameter that switches what a function does: two functions, or an enum named by its cases.
 - The decision apart from the wiring: the rule in a pure function, without the terminal, threads or I/O, and tested; the code that calls it stays thin.
@@ -78,7 +78,7 @@ The name comes first: a reader who sees only the name should know what the thing
 ## Errors
 
 - A `Result` carries its context: what was being done, on what.
-- No `unwrap` outside the tests; an `expect` only for an invariant, which its message states.
+- No `unwrap` outside the tests (Clippy `unwrap_used`); an `expect` only for an invariant, which its message states. Clippy allows it only in the `#[test]` functions and the `#[cfg(test)]` modules: a helper of the integration tests (`tests/`) uses `expect`, or the file starts with `#![allow(clippy::unwrap_used)]`.
 - An error is caught where its information still is (the status and the message of a response), not flattened into one variant.
 - The world is expected to be wrong at times (a file, an input, the network): it is handled gently. A broken invariant is a bug: it shows.
 

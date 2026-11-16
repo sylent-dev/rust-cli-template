@@ -15,6 +15,9 @@ on:
       - Cargo.lock
       # A new version of Rust builds every system before the next tag.
       - rust-toolchain.toml
+      - about.hbs
+      - about.toml
+      - deny.toml
       # The files the Package step copies, so that a rename fails here rather than at the tag.
       - README.md
       - LICENSE-APACHE
@@ -54,9 +57,36 @@ jobs:
             exit 1
           fi
 
+  # One file for the four archives: about.toml lists the targets of the matrix below.
+  notices:
+    name: Check the advisories and the licenses, and write the notices
+    needs: tag
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: rustup toolchain install
+      - uses: taiki-e/install-action@cfdb7ed4ccc7c7dce37759eae89dc5674b469b39 # v2.90.3
+        with:
+          tool: cargo-deny@0.20.2,cargo-about@0.9.3
+      # A security advisory on a dependency, not sorted in deny.toml yet, stops the release.
+      - run: cargo deny --locked check advisories licenses
+      - run: cargo about generate --locked --fail --output-file THIRD-PARTY-LICENSES about.hbs
+      # A license file of a crate that keeps the template of its copyright line: point
+      # about.toml to the right file. Only a crate without any license file may show it,
+      # with its authors written above the text by about.hbs.
+      - name: Check that every license file read has its copyright line
+        run: |
+          cargo about generate --locked --format json \
+            | jq -e '[.licenses[] | select(.source_path != null and (.text | test("<copyright holders>|<year>")))] | length == 0'
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: third-party-licenses
+          path: THIRD-PARTY-LICENSES
+          if-no-files-found: error
+
   build:
     name: Build ${{ matrix.target }}
-    needs: tag
+    needs: notices
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -84,6 +114,9 @@ jobs:
         shell: bash
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: third-party-licenses
       # The version of rust-toolchain.toml, the one the checks of main ran with.
       - run: rustup toolchain install && rustup target add ${{ matrix.target }}
       - name: Read the executable name and the version of Cargo.toml
@@ -116,7 +149,7 @@ jobs:
         run: |
           directory="$NAME-${{ matrix.system }}"
           mkdir "$directory"
-          cp README.md LICENSE-APACHE LICENSE-MIT "$directory/"
+          cp README.md LICENSE-APACHE LICENSE-MIT THIRD-PARTY-LICENSES "$directory/"
           if [ "${{ runner.os }}" = "Windows" ]; then
             cp "target/${{ matrix.target }}/release/$NAME.exe" "$directory/"
             7z a "$directory.zip" "$directory"

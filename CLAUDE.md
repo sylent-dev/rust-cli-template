@@ -143,7 +143,7 @@ Follow [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.
   - `cargo clippy --all-targets --all-features -- -D warnings`
   - `cargo test --all-features`
 - Run the checks with their exit codes written out (`cargo clippy …; echo CLIPPY=$?`), never piped into `| tail` inside an `&&` chain: the pipe hides a failure.
-- The same checks run in CI (`.github/workflows/ci.yml`) on every pull request. Never remove a failing CI job before reading its log: it may be the only check of its system.
+- The same checks run in CI (`.github/workflows/ci.yml`) on every pull request, skipped when it only changes Markdown files and `docs/` (the jobs, required on `main`, then succeed at once). Never remove a failing CI job before reading its log: it may be the only check of its system.
 - The rules of the code are in `docs/code-quality.md`: read it at the start of each step that changes code. Keep the code clean at every change, without waiting to be asked: before each commit, reread the functions the change touches as a whole and refactor them (remove what became dead or redundant, rename what no longer says what it does, keep each rule in one place, never set a value that is always overwritten), most of all after the fixes of a code review, which pile up; say in the summary what was refactored.
 - When a bug reaches the owner that a test or a check could have caught, add it in the same pull request as the fix.
 - Every acceptance example of `specs.md` (a command line, its output and its exit code) that a step touches becomes an integration test that runs the executable, in the same pull request; a step is done only when the facts of its **done when** in `process.md` (The tools) hold.

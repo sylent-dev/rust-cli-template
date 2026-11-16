@@ -25,7 +25,7 @@ Template for Rust command-line applications, with the project conventions, the p
 | `.claude/settings.json` | Project settings of Claude Code: the claude.ai connectors turned off and the unused skills hidden from the model, to save tokens. |
 | `Cargo.toml` | Package, `unsafe` code forbidden, Clippy pedantic lints, optimized release profile. |
 | `rust-toolchain.toml` | The version of Rust, pinned, with `rustfmt` and Clippy. |
-| `.github/workflows/ci.yml` | Format, lint and test on every pull request, and build with the minimum Rust version (`rust-version`). |
+| `.github/workflows/ci.yml` | Format, lint and test on every pull request, and build with the minimum Rust version (`rust-version`); the checks skipped when only the Markdown files and `docs/` change, and every action checked to be pinned to a commit. |
 | `.github/workflows/release.yml` | Windows, macOS and Linux archives published as a GitHub release on version tags. |
 | `.github/dependabot.yml` | Weekly pull requests to update the crates, the GitHub Actions and the version of Rust. |
 | `LICENSE-MIT`, `LICENSE-APACHE` | Dual license, the Rust ecosystem default. |

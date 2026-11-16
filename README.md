@@ -24,10 +24,10 @@ Template for Rust command-line applications, with the project conventions, the p
 | `docs/lessons.md` | The lessons kept for the retrospectives. |
 | `.claude/settings.json` | Project settings of Claude Code: the claude.ai connectors turned off and the unused skills hidden from the model, to save tokens. |
 | `Cargo.toml` | Package, `unsafe` code forbidden, Clippy pedantic lints, optimized release profile. |
-| `rust-toolchain.toml` | Stable toolchain with `rustfmt` and Clippy. |
+| `rust-toolchain.toml` | The version of Rust, pinned, with `rustfmt` and Clippy. |
 | `.github/workflows/ci.yml` | Format, lint and test on every pull request, and build with the minimum Rust version (`rust-version`). |
 | `.github/workflows/release.yml` | Windows, macOS and Linux archives published as a GitHub release on version tags. |
-| `.github/dependabot.yml` | Weekly pull requests to update the crates and the GitHub Actions. |
+| `.github/dependabot.yml` | Weekly pull requests to update the crates, the GitHub Actions and the version of Rust. |
 | `LICENSE-MIT`, `LICENSE-APACHE` | Dual license, the Rust ecosystem default. |
 | `inputs/`, `outputs/` | Untracked working folders: temporary references given to Claude Code, and temporary files it produces (see `CLAUDE.md`). |
 
@@ -53,7 +53,7 @@ Template for Rust command-line applications, with the project conventions, the p
 
 ## Requirements
 
-- Rust 1.93 or later (stable toolchain, see `rust-toolchain.toml`)
+- Rust 1.93 or later (the version of `rust-toolchain.toml` is installed by rustup)
 
 ## Build
 

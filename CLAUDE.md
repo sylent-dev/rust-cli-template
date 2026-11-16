@@ -155,5 +155,6 @@ Follow [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.
 ## Releases
 
 - Pushing a version tag (e.g. `v0.1.0`) that matches the version of `Cargo.toml` publishes a GitHub release with the executables for Windows, macOS and Linux (`.github/workflows/release.yml`).
+- Follow `docs/releases.md`: the notes of the version in `docs/release-notes/`, a build by hand of every system before the tag, and what an archive holds.
 - Before every release, run the `security-auditor` subagent (`.claude/agents/security-auditor.md`) on the whole repository at `main`: it writes its findings, in French, to `outputs/<YYYY-MM-DD>-security-audit.md`. Summarize them to the owner, and fix the ones they approve in a pull request before the tag; a critical or high finding blocks the tag. Before a patch release, the owner may limit the audit to the changes since the last audited version.
 - The template is made for command-line and terminal applications, which this workflow suits: an archive per system with the executable.

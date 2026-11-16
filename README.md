@@ -22,11 +22,13 @@ Template for Rust command-line applications, with the project conventions, the p
 | `docs/technical-choices.md` | The technical choices and their reasons. |
 | `docs/code-quality.md` | The rules of the code (names, functions, types, threads, systems, tests, refactoring), read at the start of each step that changes code and applied by `code-reviewer`. |
 | `docs/lessons.md` | The lessons kept for the retrospectives. |
+| `docs/releases.md` | How to publish a version, and what its archives hold. |
 | `.claude/settings.json` | Project settings of Claude Code: the claude.ai connectors turned off and the unused skills hidden from the model, to save tokens. |
 | `Cargo.toml`, `clippy.toml` | Package, `unsafe` code forbidden, Clippy pedantic lints and `unwrap` outside the tests, optimized release profile. |
 | `rust-toolchain.toml` | The version of Rust, pinned, with `rustfmt` and Clippy. |
 | `.github/workflows/ci.yml` | Format, lint and test on every pull request, and build with the minimum Rust version (`rust-version`); the checks skipped when only the Markdown files and `docs/` change, and every action checked to be pinned to a commit. |
-| `.github/workflows/release.yml` | Windows, macOS and Linux archives published as a GitHub release on version tags. |
+| `.github/workflows/release.yml` | Windows, macOS and Linux archives published as a GitHub release on version tags from `main`, with the licenses of the dependencies and the checksums. |
+| `.github/workflows/advisories.yml`, `deny.toml`, `about.toml`, `about.hbs` | The security advisories of the dependencies every day, and their licenses checked and listed at each release. |
 | `.github/dependabot.yml` | Weekly pull requests to update the crates, the GitHub Actions and the version of Rust. |
 | `LICENSE-MIT`, `LICENSE-APACHE` | Dual license, the Rust ecosystem default. |
 | `inputs/`, `outputs/` | Untracked working folders: temporary references given to Claude Code, and temporary files it produces (see `CLAUDE.md`). |
@@ -42,7 +44,7 @@ Template for Rust command-line applications, with the project conventions, the p
 2. In `Cargo.toml`, update `name`, `description` and `repository` (add `keywords` and `categories` if the crate is published), then run `cargo build` to update `Cargo.lock`.
 3. Adapt this README to the project: keep the Requirements, Build, Development, Release and License sections, replace the others.
 4. Choose the license with the owner before any code is published (process.md, Start a project): keep `MIT OR Apache-2.0`, or change `license` in `Cargo.toml` and the `LICENSE-*` files (they are also copied into the release archives by `.github/workflows/release.yml`).
-5. On GitHub, protect `main` (**Settings › Rules › Rulesets**): require a pull request and the `Format, lint and test` and `Minimum Rust version` checks. On a free account, rulesets only apply to public repositories.
+5. On GitHub, protect `main` (**Settings › Rules › Rulesets**): require a pull request and the `Format, lint and test` and `Minimum Rust version` checks; protect the tags `v*` from being moved or deleted (docs/releases.md). On a free account, rulesets only apply to public repositories.
 6. Set the pull request settings, which are not copied from the template: allow only squash merging, and delete the branches once merged (**Settings › General › Pull Requests**), or:
 
    ```sh
@@ -71,16 +73,15 @@ cargo test --all-features
 
 ## Release
 
-1. Update `version` in `Cargo.toml` (then run `cargo build` to update `Cargo.lock`) and merge it into `main`.
-2. Tag the merged commit with the same version and push the tag:
+Follow [docs/releases.md](docs/releases.md): the version in `Cargo.toml`, the notes in `docs/release-notes/v<version>.md`, a build by hand of every system, then the tag:
 
-   ```sh
-   git switch main && git pull
-   git tag v0.1.0
-   git push origin v0.1.0
-   ```
+```sh
+git switch main && git pull
+git tag v0.1.0
+git push origin v0.1.0
+```
 
-The [Release workflow](.github/workflows/release.yml) builds the archives for Windows, macOS and Linux and publishes them as a GitHub release. It fails if the tag does not match the version of `Cargo.toml`.
+The [Release workflow](.github/workflows/release.yml) builds the archives for Windows, macOS and Linux and publishes them as a GitHub release. It fails if the tag does not match the version of `Cargo.toml`, if the notes are missing, if the tagged commit isn't on `main`, or if a dependency has a security advisory not sorted yet.
 
 ## License
 

@@ -5,33 +5,35 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mock-up</title>
 <!--
-  Starting point of a mock-up page (html-mockups skill). Replace the sample application
-  with the frames of the approved wireframe.
+  Starting point of the mock-up of a terminal interface or of a rich output (html-mockups skill).
+  Replace the sample tool with the frames of the approved wireframe.
 
-  - Each style only sets tokens (CSS variables) under :root[data-theme="…"]; the components
-    use nothing else, so that a style is cheap to add or tweak.
+  - Each frame is a terminal: a grid of cells in a common monospace font (the application
+    doesn't choose the font of the terminal), sized in columns and rows (`--cols`, `--rows`).
+  - Each style only maps the roles of the interface (accent, weak text, results…) to the
+    16 named colors of a terminal, under :root[data-theme="…"]; the components use the roles
+    alone, so that a style is cheap to add or tweak. The named colors themselves belong to the
+    user's terminal theme: the `terminal` tabs show a dark and a light one.
+  - The `colors` tabs show every frame without colors (NO_COLOR): a meaning is never carried
+    by color alone, so that each role keeps a symbol, a word or a style a terminal has (bold,
+    dim, underline, reverse).
   - VARIANTS holds one group of tabs per open decision; the address keeps the choices
-    (e.g. ?theme=slate&button=pill), to share them. Remove a group once decided.
-  - A value that combines with others (a font per role, a color, a size) is a list instead:
-    `select: true` and the CSS `variable` it sets. It applies at once, without redrawing the page.
-  - A value tuned by eye (a width, an angle, a darkness) is a slider: `range` and the CSS `variable` it
-    sets, with its `unit` if it has one.
-  - SECTIONS lists every scenario and state, each drawn as a window; a new section goes at the
-    top, so that the owner finds it at once. Past ten sections, a table of contents under the
-    header links to each.
+    (e.g. ?theme=calm&terminal=light), to share them. Remove a group once decided.
+  - A value that combines with others (the borders, a set of symbols) is a list instead:
+    `select: true`, with the CSS `variable` it sets, or `redraw: true` when the components read it.
+  - A value tuned by eye (the width of the terminal) is a slider: `range` and the CSS `variable`
+    it sets, with its `unit` if it has one.
+  - sections() lists every scenario and state, each drawn as a terminal; a new section goes at
+    the top, so that the owner finds it at once. Past ten sections, a table of contents under
+    the header links to each.
 
   Serve the repository root without cache, on the port of the project (docs/technical-choices.md),
-  so that the page reaches assets/ even in a sandboxed browser:
+  so that the page reaches assets/ even in a sandboxed browser (mockup-screenshots skill):
     python3 docs/mockups/serve.py <port>
   then open http://127.0.0.1:<port>/docs/mockups/<this file>.html
 -->
-<!-- Fonts that the application can embed (e.g. SIL Open Font License). Preload the font files
-     and use font-display: block, so that the page, and its screenshots, only finish loading
-     once the fonts are there. Copy the @font-face rules of the Latin subset from
-     https://fonts.googleapis.com/css2?family=<Font>:wght@400;600;800&display=block -->
-<!-- <link rel="preload" href="https://fonts.gstatic.com/s/…/….woff2" as="font" type="font/woff2" crossorigin> -->
 <style>
-  /* The page around the windows: neutral, so that it doesn't compete with the styles. */
+  /* The page around the terminals: neutral, so that it doesn't compete with the styles. */
   body { margin: 0; background: #2a2d31; color: #e9ecef; font: 14px/1.4 system-ui, sans-serif; }
   .page-tabs { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 10px 16px; background: #1b1d20; border-bottom: 1px solid #3a3f45; }
   .page-tabs .group { display: flex; align-items: center; gap: 4px; }
@@ -53,54 +55,69 @@
   .page-slot > span { display: block; margin-bottom: 6px; color: #adb5bd; font-size: 12px; }
   .page-warning { margin: 0; padding: 10px 16px; background: #8a6a10; color: #fff; }
 
-  /* Styles: tokens only. */
-  :root[data-theme="slate"] {
-    --font-text: system-ui, sans-serif;
-    --band-a: #0f1216; --band-b: #151a20; --control: #1d242d; --line: #2a3440;
-    --text: #e3e8ef; --weak: #8692a3; --accent: #f2f5f9; --on-accent: #0f1216;
-    --radius: 3px; --padding: 14px;
+  /* The terminal theme of the user: the named colors, which the application never sets. */
+  :root[data-terminal="dark"] {
+    --term-bg: #1e1f22; --term-fg: #d4d4d4;
+    --red: #e06c75; --green: #98c379; --yellow: #e5c07b; --blue: #61afef; --magenta: #c678dd; --cyan: #56b6c2;
+    --bright-black: #7f848e;
   }
-  :root[data-theme="paper"] {
-    --font-text: Georgia, serif;
-    --band-a: #f4efe6; --band-b: #fbf8f2; --control: #ebe4d6; --line: #d6ccb8;
-    --text: #2b2620; --weak: #7a6f60; --accent: #8c3b1f; --on-accent: #fbf8f2;
-    --radius: 6px; --padding: 16px;
+  :root[data-terminal="light"] {
+    --term-bg: #fafafa; --term-fg: #383a42;
+    --red: #c8352d; --green: #3f8f2f; --yellow: #a77b00; --blue: #2f6fd6; --magenta: #9a3fb4; --cyan: #1d8a96;
+    --bright-black: #8a8d94;
   }
 
+  /* Styles: the roles mapped to the named colors, nothing else. */
+  :root[data-theme="calm"] { --accent: var(--blue); --weak: var(--bright-black); --good: var(--green); --bad: var(--red); }
+  :root[data-theme="warm"] { --accent: var(--yellow); --weak: var(--bright-black); --good: var(--cyan); --bad: var(--magenta); }
+  /* Without colors (NO_COLOR): every role falls back to the text color, and keeps its style. */
+  :root[data-colors="none"] { --accent: var(--term-fg); --weak: var(--term-fg); --good: var(--term-fg); --bad: var(--term-fg); }
+
   /* Components: prefix the classes of the application (here `app-`) and of the states
-     (`is-`), so that they never collide with the classes of the page or of each other. */
-  .app-window { width: 420px; overflow: hidden; background: var(--band-b); color: var(--text); font-family: var(--font-text); box-shadow: 0 8px 30px #0006; }
-  .app-header { display: flex; align-items: center; height: var(--header-height, 48px); padding-left: var(--padding); background: var(--band-a); font-family: var(--font-title, var(--font-text)); font-weight: 800; }
-  .app-header .app-spacer { flex: 1; }
-  .app-block { display: grid; place-items: center; width: 48px; height: 48px; background: var(--control); color: var(--weak); }
-  .app-content { padding: var(--padding); }
-  .app-muted { color: var(--weak); }
-  .app-button { display: inline-block; margin-top: 12px; padding: 8px 14px; background: var(--accent); color: var(--on-accent); font-weight: 600; }
-  :root[data-button="pill"] .app-button { border-radius: 999px; }
-  :root[data-button="square"] .app-button { border-radius: 0; }
-  .app-row { display: flex; justify-content: space-between; padding: 8px var(--padding); }
-  .app-row:nth-child(even) { background: var(--band-a); }
-  .app-row.is-selected { outline: 1px solid var(--accent); outline-offset: -1px; }
-  .app-footer { padding: 6px var(--padding); background: var(--band-a); color: var(--weak); font-size: 12px; }
+     (`is-`), so that they never collide with the classes of the page or of each other.
+     Only the styles a terminal supports: bold, dim, underline, reverse (italic isn't everywhere). */
+  .app-terminal {
+    box-sizing: content-box; width: calc(var(--cols, 80) * 1ch); height: calc(var(--rows, 24) * 1.25em); overflow: hidden;
+    padding: 6px 8px; background: var(--term-bg); color: var(--term-fg);
+    font: 14px/1.25 ui-monospace, "DejaVu Sans Mono", Menlo, Consolas, monospace; white-space: pre;
+    box-shadow: 0 8px 30px #0006;
+  }
+  .app-accent { color: var(--accent); font-weight: 700; }
+  .app-weak { color: var(--weak); }
+  :root[data-colors="none"] .app-weak { opacity: .7; }   /* dim */
+  .app-good { color: var(--good); }
+  .app-bad { color: var(--bad); font-weight: 700; }
+  .app-key { text-decoration: underline; }
+  /* A symbol takes one cell, as in a terminal, even when the browser draws it with a wider font. */
+  .app-symbol { display: inline-block; width: 1ch; text-align: center; vertical-align: bottom; }
+  .app-key .app-symbol { text-decoration: underline; }   /* an inline block doesn't inherit it */
+  .is-selected { background: var(--term-fg); color: var(--term-bg); }   /* reverse */
 </style>
 </head>
 <body>
-<p class="page-warning" id="file-warning" hidden>Opened as a file: serve the repository root (see the comment at the top of this page) so that the images of assets/ load.</p>
+<p class="page-warning" id="file-warning" hidden>Opened as a file: serve the repository root (see the comment at the top of this page) so that the files of assets/ load.</p>
 <nav class="page-tabs" id="tabs" aria-label="Styles and variants"></nav>
 <main id="sheet"></main>
 <script>
   const THEMES = {
-    slate: { title: "A · Slate", text: "Cool near-black grays, white as the main action color, one geometric face." },
-    paper: { title: "B · Paper", text: "Warm light background, a serif face, a rust accent." },
+    calm: { title: "A · Calm", text: "Blue for the accent, green and red for the results, gray for the weak text." },
+    warm: { title: "B · Warm", text: "Yellow for the accent, cyan and magenta for the results, told apart without red and green." },
+  };
+  // Box-drawing sets, the ASCII one for a terminal that can't show the others.
+  const BORDERS = {
+    light: { h: "─", v: "│", tl: "┌", tr: "┐", bl: "└", br: "┘" },
+    rounded: { h: "─", v: "│", tl: "╭", tr: "╮", bl: "╰", br: "╯" },
+    ascii: { h: "-", v: "|", tl: "+", tr: "+", bl: "+", br: "+" },
   };
   // One group of tabs per open decision; `fallback` is the choice shown by default.
   const VARIANTS = {
-    theme: { label: "Style", options: Object.fromEntries(Object.entries(THEMES).map(([key, theme]) => [key, theme.title])), fallback: "slate" },
-    button: { label: "Button", options: { square: "Square", pill: "Pill" }, fallback: "square" },
-    // A list, for a value that combines with others: each option is a value of the CSS variable.
-    titleFont: { label: "Title font", select: true, variable: "--font-title", options: { "system-ui, sans-serif": "System", "Georgia, serif": "Georgia", "ui-monospace, monospace": "Monospace" }, fallback: "system-ui, sans-serif" },
+    theme: { label: "Style", options: Object.fromEntries(Object.entries(THEMES).map(([key, theme]) => [key, theme.title])), fallback: "calm" },
+    terminal: { label: "Terminal", options: { dark: "Dark", light: "Light" }, fallback: "dark" },
+    colors: { label: "Colors", options: { on: "On", none: "NO_COLOR" }, fallback: "on" },
+    // A list, for a value that combines with others; `redraw`, since the components read it.
+    borders: { label: "Borders", select: true, redraw: true, options: { rounded: "Rounded", light: "Light", ascii: "ASCII" }, fallback: "rounded" },
     // A slider, for a value tuned by eye: `unit` follows the value in the CSS variable.
-    headerSize: { label: "Header height", range: { min: 36, max: 64, step: 1 }, variable: "--header-height", unit: "px", fallback: "48" },
+    cols: { label: "Columns", range: { min: 60, max: 120, step: 1 }, variable: "--cols", unit: "", fallback: "80" },
   };
 
   const params = new URLSearchParams(location.search);
@@ -110,31 +127,47 @@
   const chosen = Object.fromEntries(Object.entries(VARIANTS).map(([key, variant]) =>
     [key, accepts(variant, params.get(key)) ? params.get(key) : variant.fallback]));
 
-  // Components: functions that return HTML, with sample data close to real ones.
+  // Components: functions that return the lines of a terminal, with sample data close to real ones.
   // Avoid global names that the browser already uses (`top`, `name`, `status`…).
-  // Icons as SVG lines in the text color: text symbols (⚙, ⌕, ✓) render small and off-center.
-  const icon = (size, body) => `<svg width="${size}" height="${size}" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">${body}</svg>`;
-  const MENU = '<path d="M3 4.5h10M3 8h10M3 11.5h10"/>';
-  const appHeader = () => `<div class="app-header">My application<span class="app-spacer"></span><span class="app-block">${icon(16, MENU)}</span></div>`;
-  const appFooter = (text = "Updated 2 min ago") => `<div class="app-footer">${text}</div>`;
-  const appRows = (rows, selected = -1) => rows.map(([label, value], index) =>
-    `<div class="app-row ${index === selected ? "is-selected" : ""}"><span>${label}</span><span class="app-muted">${value}</span></div>`).join("");
-  const appWindow = (...parts) => `<div class="app-window">${parts.join("")}</div>`;
+  // A meaning never rests on color alone: a symbol or a word goes with it (✓ ✗, "error:").
+  // A line is [plain text, html]: the plain text counts the cells, the html styles them.
+  const span = (role, text) => `<span class="app-${role}">${text}</span>`;
+  const symbol = text => [...text].map(character => `<span class="app-symbol">${character}</span>`).join("");
+  const pad = (text, width) => text + " ".repeat(Math.max(0, width - [...text].length));
+  const box = (title, lines, width = 50) => {
+    const b = BORDERS[chosen.borders];
+    return [
+      b.tl + b.h + " " + span("accent", title) + " " + b.h.repeat(Math.max(0, width - title.length - 3)) + b.tr,
+      ...lines.map(([plain, html]) => b.v + " " + html + " ".repeat(Math.max(0, width - 1 - [...plain].length)) + b.v),
+      b.bl + b.h.repeat(width) + b.br,
+    ].join("\n");
+  };
+  const repository = ([path, size, clean], selected) => {
+    const plain = pad(path, 30) + pad(size, 10) + (clean ? "✓ clean" : "✗ dirty");
+    const html = pad(path, 30) + span("weak", pad(size, 10)) + (clean ? span("good", symbol("✓") + " clean") : span("bad", symbol("✗") + " dirty"));
+    const selectedHtml = pad(path, 30) + pad(size, 10) + symbol(clean ? "✓" : "✗") + (clean ? " clean" : " dirty");
+    return [plain, selected ? `<span class="is-selected">${selectedHtml}</span>` : html];
+  };
+  const keys = () => `${span("key", "q")} quit  ${span("key", symbol("↑↓"))} move  ${span("key", "/")} search`;
+  const terminal = (...lines) => `<div class="app-terminal">${lines.join("\n")}</div>`;
 
-  const ROWS = [["Divine Orb", "182 ex"], ["Chaos Orb", "73 ex"], ["Exalted Orb", "1 ex"]];
+  const REPOSITORIES = [["~/projects/exile-market", "1.2 GB", true], ["~/projects/old-prototype", "312 MB", false], ["~/projects/stepwise", "88 MB", true]];
+  const EMPTY = "Nothing found under ~/projects.";
 
   // Every scenario and state: [section title, [[label, html], …]], the newest section first.
-  const SECTIONS = [
+  // Built at each render, since the components read the choices (the borders).
+  const sections = () => [
     ["Main screen", [
-      ["With data", appWindow(appHeader(), appRows(ROWS), `<div class="app-content"><span class="app-button">Search</span></div>`, appFooter())],
-      ["Row selected", appWindow(appHeader(), appRows(ROWS, 1), appFooter())],
+      ["With data", terminal(box("Repositories", REPOSITORIES.map(r => repository(r, false))), "", keys())],
+      ["Row selected", terminal(box("Repositories", REPOSITORIES.map((r, index) => repository(r, index === 1))), "", keys())],
     ]],
     ["States", [
-      ["Empty", appWindow(appHeader(), `<div class="app-content app-muted">Nothing yet.</div>`, appFooter("Never updated"))],
+      ["Empty", terminal(box("Repositories", [[EMPTY, span("weak", EMPTY)]]), "", keys())],
+      ["Error", terminal(span("bad", "error:") + " can't read ~/projects: permission denied", span("weak", "hint: run it again on a folder you can read"))],
     ]],
   ];
 
-  // A list or a slider only changes a variable: the page stays as it is, and a slider keeps the pointer.
+  // A list or a slider that only changes a variable leaves the page as it is, and a slider keeps the pointer.
   function applyVariables() {
     for (const [key, variant] of Object.entries(VARIANTS)) {
       if (variant.variable) document.documentElement.style.setProperty(variant.variable, chosen[key] + (variant.unit ?? ""));
@@ -153,14 +186,15 @@
       : `<div class="group"><span>${variant.label}</span>${Object.entries(variant.options).map(([value, label]) =>
         `<button type="button" data-variant="${key}" data-value="${value}" aria-pressed="${chosen[key] === value}">${label}</button>`).join("")}</div>`).join("");
     const theme = THEMES[chosen.theme];
+    const all = sections();
     // Past ten sections, a table of contents under the header: the title of each section up to its colon.
-    const contents = SECTIONS.length > 10
-      ? `<nav class="page-contents" aria-label="Sections">${SECTIONS.map(([title], index) =>
+    const contents = all.length > 10
+      ? `<nav class="page-contents" aria-label="Sections">${all.map(([title], index) =>
         `<a href="#section-${index + 1}">${title.split(":")[0]}</a>`).join("")}</nav>`
       : "";
     document.getElementById("sheet").innerHTML = `
       <header class="page-header"><h1>Style ${theme.title}</h1><p>${theme.text} Sample data.</p>${contents}</header>
-      ${SECTIONS.map(([title, slots], index) => `<section class="page-section" id="section-${index + 1}"><h2>${title}</h2><div class="page-row">${
+      ${all.map(([title, slots], index) => `<section class="page-section" id="section-${index + 1}"><h2>${title}</h2><div class="page-row">${
         slots.map(([label, html]) => `<div class="page-slot"><span>${label}</span>${html}</div>`).join("")}</div></section>`).join("")}`;
   }
 
@@ -178,7 +212,7 @@
     chosen[variant] = event.target.value;
     if (VARIANTS[variant].range) event.target.nextElementSibling.value = chosen[variant] + (VARIANTS[variant].unit ?? "");
     keepInAddress();
-    applyVariables();
+    if (VARIANTS[variant].redraw) render(); else applyVariables();
   });
   document.getElementById("file-warning").hidden = location.protocol !== "file:";
   render();

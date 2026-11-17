@@ -14,9 +14,12 @@ Template for Rust command-line applications, with the project conventions, the p
 | `.claude/agents/code-reviewer.md` | Subagent that reviews a branch before its pull request, or the whole repository area by area before the first release, and writes its notes, in French, to `outputs/`. |
 | `.claude/agents/security-auditor.md` | Subagent that audits the security of the whole repository before each release, and writes its findings, in French, to `outputs/`. |
 | `.claude/agents/dependency-reviewer.md` | Subagent that reviews the open Dependabot pull requests and tells, in French, which to merge or set aside, with their links and the comments to post. |
-| `.claude/skills/excalidraw-wireframes/` | Skill: editable Excalidraw wireframes of a terminal interface, and sketches of a structure (the commands and their options), iterated with the owner (Python helpers and an SVG preview). |
+| `.claude/skills/excalidraw-structures/` | Skill: a structure (the commands and their options, the screens of a terminal interface) sketched as cards the owner moves, before the wireframes (the Python helpers and the SVG preview of both Excalidraw skills). |
+| `.claude/skills/excalidraw-wireframes/` | Skill: editable Excalidraw wireframes of a terminal interface, in columns and rows, iterated with the owner. |
 | `.claude/skills/tidy-io-folders/` | Skill: `inputs/` and `outputs/` tidied at the end of a numbered step, on the owner's word. |
-| `.claude/skills/html-mockups/` | Skill: the HTML mock-up built from the wireframe, styles and open decisions compared with tabs, then the design tokens (starting page, server without cache, headless screenshots). |
+| `.claude/skills/html-mockups/` | Skill: the HTML mock-up of a terminal interface built from the wireframe, every screen drawn as a terminal (a grid of cells, the named colors, with and without colors), 3 or 4 styles compared with tabs (starting page). |
+| `.claude/skills/mockup-screenshots/` | Skill: the mock-up served without cache, and each change checked with a headless screenshot (server and screenshot scripts). |
+| `.claude/skills/mockup-decisions/` | Skill: the chosen style iterated one decision at a time with its control on the page, then the design tokens. |
 | `specs.md` | Skeleton of the specifications: what the application does. |
 | `roadmap.md`, `backlog.md` | Skeletons of the roadmap (the size of the project and the steps chosen, one pull request per step, kept short since it is read at every session) and of the backlog (polish, edge cases, features, large works, waiting on others). |
 | `docs/technical-choices.md` | The technical choices and their reasons. |

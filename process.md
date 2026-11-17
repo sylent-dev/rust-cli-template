@@ -139,14 +139,14 @@ What users and scripts expect of any command-line tool. The specifications answe
 
 Goal: agree on how the commands, their options and the screens of a terminal interface fit together before writing them.
 
-1. Claude Code draws the structure in Excalidraw (`excalidraw-wireframes` skill): one card per command or screen, the current state and **two leads** side by side, a parking area for the items not placed yet and the open questions, so that the owner moves the cards by hand.
+1. Claude Code draws the structure in Excalidraw (`excalidraw-structures` skill): one card per command or screen, the current state and **two leads** side by side, a parking area for the items not placed yet and the open questions, so that the owner moves the cards by hand.
 2. The owner moves the cards, compares the leads, and chooses; Claude Code redraws the chosen lead, completed, and writes it in `specs.md`.
 
 ## Wireframes
 
 Goal: agree on the **layout**, without colors or code, in a format the owner can edit.
 
-The `excalidraw-wireframes` skill (`.claude/skills/`) carries out this phase: its Python helpers write the file and preview it.
+The `excalidraw-wireframes` skill (`.claude/skills/`) carries out this phase, with the Python helpers of `excalidraw-structures`, which write the file and preview it.
 
 1. Claude Code generates an Excalidraw file in `docs/wireframes/` (a script writes the JSON with the helpers of the skill): grayscale, sample data close to real ones, one frame per screen or window size, **one group per block** so that a block moves in one click (double-click a block to edit one of its elements, **Ctrl+Shift+G** to ungroup it).
 2. It checks the result with an SVG preview before handing it over.
@@ -166,9 +166,9 @@ Working with the file:
 
 Goal: choose the style with real content, every scenario and every state, before writing the application.
 
-The `html-mockups` skill (`.claude/skills/`) carries out this phase, from a starting page with the style and decision tabs, and a headless screenshot script.
+Three skills (`.claude/skills/`) carry out this phase, one job each: `html-mockups` builds the page from a starting page that draws terminals, with its style, terminal theme and `NO_COLOR` tabs; `mockup-screenshots` serves it and checks each change with a headless screenshot; `mockup-decisions` iterates on the chosen style one decision at a time and writes the tokens.
 
-1. One self-contained HTML page in `docs/mockups/`, built from the approved wireframe: every frame of the wireframe becomes a window, with sample data close to real ones.
+1. One self-contained HTML page in `docs/mockups/`, built from the approved wireframe: every frame of the wireframe becomes a terminal of its size in columns and rows, with sample data close to real ones.
 2. **Several styles on the same page, 3 or 4**, each with its own colors, borders, symbols and density, switched with **tabs at the top of the page**. The address keeps the chosen style (e.g. `?theme=slate`) to share it. Each style only sets tokens (CSS variables); the components use them all, so that a style is cheap to add or tweak.
    - The styles explore **new directions** for this application, its users and its subject. [design-journal.md](design-journal.md) records the past experiences: it may inspire one of the styles, never all of them, and nothing in it is a default.
 3. The owner picks a style, or mixes two; iterate on it alone, one change at a time (e.g. the main color, then the logo, then the font).
@@ -183,7 +183,7 @@ The `html-mockups` skill (`.claude/skills/`) carries out this phase, from a star
    ```
 
    then open `http://127.0.0.1:<port>/docs/mockups/<file>.html`, and reload after each change. Two projects on the same port took each other's server over.
-6. Claude Code checks its own changes with headless screenshots, kept in its scratchpad, before asking for a review, and exports one large PNG per style to `outputs/` to compare them at a glance. A test that needs extra code runs on a copy of the page, never on the file the owner has open. The screenshots use **Playwright** and its own Chromium, installed once outside the projects (see the `html-mockups` skill): it sees the page once its scripts have settled, reports the errors of the browser console, and works even when Claude Code runs in a sandbox that doesn't see the browsers of the system (VS Code as a Flatpak). It checks the mock-up page only, whatever the kind of application; Firefox headless remains the fallback.
+6. Claude Code checks its own changes with headless screenshots, kept in its scratchpad, before asking for a review, and exports one large PNG per style to `outputs/` to compare them at a glance. A test that needs extra code runs on a copy of the page, never on the file the owner has open. The screenshots use **Playwright** and its own Chromium, installed once outside the projects (see the `mockup-screenshots` skill): it sees the page once its scripts have settled, reports the errors of the browser console, and works even when Claude Code runs in a sandbox that doesn't see the browsers of the system (VS Code as a Flatpak). It checks the mock-up page only, whatever the kind of application; Firefox headless remains the fallback.
 
 ## Design system
 

@@ -8,12 +8,13 @@ on:
 permissions:
   contents: read
 
-# A new push to a pull request cancels its runs that are still going. Never on main: a
-# documentation commit pushed during the run of a code commit would cancel it, then skip its
-# own checks, and leave the code commit unchecked.
+# A new push to a pull request cancels its runs that are still going. Each push to `main` has a
+# group of its own, its commit: sharing one, a documentation commit pushed during the run of a
+# code commit would cancel that run (or, with `cancel-in-progress: false`, the run waiting
+# behind it), then skip its own checks, since it compares with that commit alone.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: true
 
 env:
   CARGO_TERM_COLOR: always

@@ -16,6 +16,7 @@ Template for Rust command-line applications, with the project conventions, the p
 | `.claude/agents/dependency-reviewer.md` | Subagent that reviews the open Dependabot pull requests and tells, in French, which to merge or set aside, with their links and the comments to post. |
 | `.claude/skills/excalidraw-structures/` | Skill: a structure (the commands and their options, the screens of a terminal interface) sketched as cards the owner moves, before the wireframes (the Python helpers and the SVG preview of both Excalidraw skills). |
 | `.claude/skills/excalidraw-wireframes/` | Skill: editable Excalidraw wireframes of a terminal interface, in columns and rows, iterated with the owner. |
+| `.claude/skills/refactoring-pass/` | Skill: a refactoring pass on the code changed since the last one, before each minor version, until no high nor medium finding is left. |
 | `.claude/skills/tidy-io-folders/` | Skill: `inputs/` and `outputs/` tidied at the end of a numbered step, on the owner's word. |
 | `.claude/skills/html-mockups/` | Skill: the HTML mock-up of a terminal interface built from the wireframe, every screen drawn as a terminal (a grid of cells, the named colors, with and without colors), 3 or 4 styles compared with tabs (starting page). |
 | `.claude/skills/mockup-screenshots/` | Skill: the mock-up served without cache, and each change checked with a headless screenshot (server and screenshot scripts). |
